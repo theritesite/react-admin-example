@@ -1,0 +1,24 @@
+{
+  "name": "react-admin-example",
+  "version": "0.1.0",
+  "description": "Admin Panels using WP React assets",
+  "main": "build/index.js",
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "env": "wp-scripts env",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "wp-env": {
+    "plugin-dir": "react-admin-example",
+    "plugin-name": "React Admin Example",
+    "docker-template": "./docker-compose.yml",
+    "welcome-build-command": "npm run dev",
+    "welcome-logo": "OHHHH!"
+  },
+  "author": "TheRiteSites",
+  "license": "GPL-2.0",
+  "devDependencies": {
+    "@wordpress/scripts": "6.2.0"
+  }
+}

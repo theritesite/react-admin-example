@@ -1,0 +1,78 @@
+version: "3"
+services:
+  wordpress:
+    image: "wordpress:${WP_VERSION:-5.3.2}-php${PHP_VERSION:-7.2}-apache"
+    environment:
+      VIRTUAL_HOST: project.test
+      WORDPRESS_DB_HOST: "mysql"
+      WORDPRESS_DB_NAME: "wordpress"
+      WORDPRESS_DB_USER: "root"
+      WORDPRESS_DB_PASSWORD: runot4$real
+      WORDPRESS_TABLE_PREFIX: "wp_"
+    depends_on:
+      - "mysql"
+    networks:
+      - "front"
+      - "back"
+    volumes:
+      - "wp:/var/www/html:rw"
+      - ".:/var/www/html/wp-content/plugins/react-admin-example:ro"
+    ports:
+      - 80:80
+
+  wp-cli:
+    image: "wordpress:cli-${WP_CLI_VERSION:-2.2.0}-php${PHP_VERSION:-7.3}"
+    environment:
+      - APACHE_RUN_USER="www-data"
+      - APACHE_RUN_GROUP="www-data"
+    depends_on:
+      - "mysql"
+    networks:
+      - "back"
+    volumes:
+      - "wp:/var/www/html:rw"
+      - "./bin/install-wp.sh:/usr/local/bin/install-wp:ro"
+      - ".:/var/www/html/wp-content/plugins/react-admin-example:ro"
+
+  mysql:
+    image: "mysql:5.7"
+    environment:
+      MYSQL_DATABASE: "wordpress"
+      MYSQL_ROOT_PASSWORD: runot4$real
+    networks:
+      - "back"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - 8080:8080
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+    ports:
+      - 8082:80
+
+  proxy:
+    image: "jwilder/nginx-proxy:alpine"
+    ports:
+      - "8000:80"
+    networks:
+      front:
+        aliases:
+          - project.test
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+
+  whoami:
+    image: jwilder/whoami
+    environment:
+      - VIRTUAL_HOST=project.test
+networks:
+  front: {}
+  back: {}
+
+volumes:
+  wp: {}
+  mysql-data: {}
